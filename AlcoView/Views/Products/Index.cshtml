@@ -40,9 +40,9 @@
                 @Html.DisplayNameFor(model => model.Created)
             </th>
             <th>
-                <!--
-                @Html.DisplayNameFor(model => model.Category)
-                -->
+                <p>Id категории</p>
+            </th>
+            <th>
                 <p>Категория</p>
             </th>
             <th></th>
@@ -59,7 +59,7 @@
                     @Html.DisplayFor(modelItem => item.Country)
                 </td>
                 <td>
-                    <img src=@Html.DisplayFor(modelItem => item.ImageUrl) alt=@Html.DisplayFor(modelItem => item.ImageUrl) />
+                    <img src = @Html.DisplayFor(modelItem => item.ImageUrl) />
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Volume)
@@ -78,6 +78,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Created)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Id)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Category.Name)

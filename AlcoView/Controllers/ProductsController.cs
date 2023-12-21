@@ -58,14 +58,21 @@ namespace AlcoView.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Country,ImageUrl,Volume,SpirtVolume,Price,Count,Status,Created,CategoryId")] Product product)
         {
+            /*
             if (ModelState.IsValid)
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            */
+            _context.Add(product);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Id", product.CategoryId);
-            return View(product);
+            //return View(product);
+            
+
         }
 
         // GET: Products/Edit/5
@@ -97,8 +104,13 @@ namespace AlcoView.Controllers
                 return NotFound();
             }
 
+            _context.Update(product);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
             if (ModelState.IsValid)
             {
+                /*
                 try
                 {
                     _context.Update(product);
@@ -115,10 +127,11 @@ namespace AlcoView.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                */
+
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Id", product.CategoryId);
-            return View(product);
+            //return View(product);
         }
 
         // GET: Products/Delete/5
