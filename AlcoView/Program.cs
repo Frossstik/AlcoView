@@ -1,6 +1,9 @@
 using AlcoView.Data;
 using AlcoView.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,11 +11,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AlcoContext>(options => options.UseSqlServer(connectionString));
-/*
-builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
-builder.Services.AddScoped<IBaseRepository<Product>, BaseRepository<Product>>();
-builder.Services.AddScoped<IBaseRepository<Category>, BaseRepository<Category>>();
-*/
+
+builder.Services.AddDbContext<AppIdentityContext>(options =>
+                options.UseSqlServer(connectionString));
+
+builder.Services.AddIdentity<User, IdentityRole>(opts =>
+{
+    opts.Password.RequiredLength = 8;
+    opts.Password.RequireNonAlphanumeric = false;
+    opts.Password.RequireLowercase = false;
+    opts.Password.RequireUppercase = false;
+    opts.Password.RequireDigit = false;
+})
+    .AddEntityFrameworkStores<AppIdentityContext>();
+
+builder.Services.Configure<PasswordHasherOptions>(option =>
+{
+    option.IterationCount = 12000;
+});
+
+// Force Identity's security stamp to be validated every minute.
+builder.Services.Configure<SecurityStampValidatorOptions>(o =>
+                   o.ValidationInterval = TimeSpan.FromMinutes(1));
 
 var app = builder.Build();
 
@@ -29,10 +49,28 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<User>>();
+        var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await RoleInitializer.InitializeAsync(userManager, rolesManager);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
 
 app.Run();

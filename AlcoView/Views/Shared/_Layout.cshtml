@@ -29,8 +29,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Каталог</a>
                         </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Пользователи</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Роли</a>
+                            </li>
+                        }
                     </ul>
                 </div>
+            </div>
+            <div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <p>@User.Identity.Name</p>
+
+                    <form method="post" asp-controller="Account" asp-action="Logout">
+                        <input type="submit" value="Выход" />
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login">Вход</a>
+                    <a asp-controller="Account" asp-action="Register">Регистрация</a>
+                }
             </div>
         </nav>
     </header>

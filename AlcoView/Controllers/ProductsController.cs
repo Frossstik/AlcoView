@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlcoView.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AlcoView.Controllers
 {
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly AlcoContext _context;
